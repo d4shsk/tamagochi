@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlowDown - Серунчик</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            color: white;
+        }
+        .header h1 {
+            font-size: 2em;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .pet-display {
+            text-align: center;
+            padding: 20px;
+        }
+        .pet-avatar {
+            font-size: 100px;
+            margin-bottom: 15px;
+        }
+        .pet-name {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .pet-stage {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .progress-container {
+            margin: 20px 0;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #666;
+        }
+        .progress-bar {
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s;
+        }
+        .stat-row {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .stat-icon {
+            font-size: 30px;
+            width: 40px;
+        }
+        .stat-info {
+            flex: 1;
+            margin-left: 10px;
+        }
+        .stat-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .action-btn {
+            padding: 20px 10px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .feed-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .play-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .rest-btn {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+        .action-icon {
+            font-size: 30px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .members-list {
+            list-style: none;
+        }
+        .member-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .member-info {
+            flex: 1;
+        }
+        .member-name {
+            font-weight: 600;
+            color: #333;
+        }
+        .member-role {
+            font-size: 12px;
+            color: #666;
+        }
+        .invite-form {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .invite-form input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .invite-form button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .mission-box {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        .mission-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .mission-progress {
+            font-size: 1.2em;
+            color: #333;
+        }
+        .mission-complete {
+            color: #43e97b;
+            font-weight: bold;
+        }
+        .activity-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .activity-user {
+            font-weight: 600;
+            color: #667eea;
+        }
+        .activity-action {
+            color: #666;
+        }
+        .activity-time {
+            color: #999;
+            font-size: 12px;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🥚 SlowDown</h1>
+        <a href="/logout" class="logout-btn">Выйти</a>
+    </div>
+    
+    <div class="container">
+        <!-- Pet Display -->
+        <div class="card pet-display">
+            <div class="pet-avatar">
+                {% if team.pet_stage == "egg" %}🥚
+                {% elif team.pet_stage == "baby" %}🐣
+                {% elif team.pet_stage == "teen" %}🐤
+                {% else %}🐔{% endif %}
+            </div>
+            <div class="pet-name">{{ team.pet_name }}</div>
+            <div class="pet-stage">{{ stage_name }}</div>
+            
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Прогресс до эволюции</span>
+                    <span>{{ team.progress }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ team.progress }}%"></div>
+                </div>
+            </div>
+            
+            <div class="stat-row">
+                <div class="stat-icon">🍖</div>
+                <div class="stat-info">
+                    <div class="stat-name">Сытость</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ team.hunger }}%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-row">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-info">
+                    <div class="stat-name">Энергия</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ team.energy }}%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-row">
+                <div class="stat-icon">😊</div>
+                <div class="stat-info">
+                    <div class="stat-name">Настроение</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ team.mood }}%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <form style="margin-top: 25px;">
+                <div class="actions">
+                    <button type="submit" formaction="/action/feed" class="action-btn feed-btn">
+                        <span class="action-icon">🍖</span>
+                        Покормить
+                    </button>
+                    <button type="submit" formaction="/action/play" class="action-btn play-btn">
+                        <span class="action-icon">🎾</span>
+                        Поиграть
+                    </button>
+                    <button type="submit" formaction="/action/rest" class="action-btn rest-btn">
+                        <span class="action-icon">💤</span>
+                        Отдых
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Mission & Team -->
+        <div class="card">
+            <h2>📋 Ежедневная миссия</h2>
+            <div class="mission-box">
+                <div class="mission-title">{{ mission.description }}</div>
+                <div class="mission-progress">
+                    {% if mission.completed %}
+                        <span class="mission-complete">✅ Выполнено!</span>
+                    {% else %}
+                        {{ mission.current_count }} / {{ mission.target_count }}
+                        <div class="progress-bar" style="margin-top: 10px;">
+                            <div class="progress-fill" style="width: {{ (mission.current_count / mission.target_count * 100)|int }}%"></div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <h2>👥 Команда ({{ member_count }}/4)</h2>
+            <ul class="members-list">
+                {% for member, user in members %}
+                <li class="member-item">
+                    <div class="member-avatar">{{ user.username[0]|upper }}</div>
+                    <div class="member-info">
+                        <div class="member-name">{{ user.username }}</div>
+                        {% if member.is_owner %}
+                        <div class="member-role">👑 Владелец</div>
+                        {% else %}
+                        <div class="member-role">Участник</div>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            {% if member_count < 4 %}
+            <form action="/invite" method="post" class="invite-form">
+                <input type="text" name="code" placeholder="Логин друга" required>
+                <button type="submit">Пригласить</button>
+            </form>
+            {% else %}
+            <div class="warning-box">
+                ⚠️ Команда полная (максимум 4 человека)
+            </div>
+            {% endif %}
+            
+            {% if member_count < 2 %}
+            <div class="warning-box" style="margin-top: 15px;">
+                ⚠️ Пригласите хотя бы одного друга для начала выращивания!
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Activity Log -->
+        <div class="card">
+            <h2>📜 История действий</h2>
+            <ul class="activity-list">
+                {% for action in actions %}
+                <li class="activity-item">
+                    <div>
+                        <span class="activity-user">{{ action.username }}</span>
+                        <span class="activity-action">{{ action.action }}</span>
+                    </div>
+                    <span class="activity-time">{{ action.time }}</span>
+                </li>
+                {% else %}
+                <li class="activity-item">
+                    <span class="activity-action">Пока нет действий</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
