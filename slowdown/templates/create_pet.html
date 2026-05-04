@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlowDown - Создать питомца</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .pet-icon {
+            text-align: center;
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .info-box ul {
+            list-style: none;
+            padding-left: 10px;
+        }
+        .info-box li {
+            padding: 8px 0;
+            color: #555;
+        }
+        .info-box li:before {
+            content: "🥚 ";
+        }
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="pet-icon">🥚</div>
+        <h1>Создание питомца</h1>
+        <p class="subtitle">Давайте начнём выращивать Серунчика!</p>
+        
+        <div class="info-box">
+            <h3>Как это работает:</h3>
+            <ul>
+                <li>Серунчик имеет 3 характеристики: Сытость, Энергия, Настроение</li>
+                <li>Вы не можете растить его в одиночку - пригласите от 1 до 3 друзей</li>
+                <li>Кормите, играйте и давайте отдыхать Серунчику</li>
+                <li>Выполняйте ежедневные миссии для быстрого роста</li>
+                <li>Серунчик эволюционирует: Яйцо → Малыш → Подросток → Взрослый</li>
+            </ul>
+        </div>
+        
+        <form action="/create-pet" method="post">
+            <button type="submit">🥚 Создать Серунчика</button>
+        </form>
+        
+        <div class="warning">
+            ⚠️ <strong>Важно:</strong> Вам понадобится пригласить хотя бы одного друга, чтобы начать выращивание!
+        </div>
+    </div>
+</body>
+</html>
