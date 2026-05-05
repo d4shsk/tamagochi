@@ -65,16 +65,15 @@ def get_stage_name(stage: PetStage) -> str:
     return names.get(stage, "Неизвестно")
 
 def check_evolution(team: Team):
-    """Check if pet should evolve based on progress"""
-    if team.progress >= 100 and team.pet_stage == PetStage.EGG:
-        team.pet_stage = PetStage.BABY
-        team.progress = 0
-    elif team.progress >= 100 and team.pet_stage == PetStage.BABY:
-        team.pet_stage = PetStage.TEEN
-        team.progress = 0
-    elif team.progress >= 100 and team.pet_stage == PetStage.TEEN:
+    """Check if pet should evolve based on level"""
+    if team.level >= 50:
         team.pet_stage = PetStage.ADULT
-        team.progress = 0
+    elif team.level >= 20:
+        team.pet_stage = PetStage.TEEN
+    elif team.level >= 5:
+        team.pet_stage = PetStage.BABY
+    else:
+        team.pet_stage = PetStage.EGG
     return team
 
 def apply_time_decay(db: Session, team: Team):
@@ -100,10 +99,21 @@ def apply_time_decay(db: Session, team: Team):
                 Mission.date >= datetime.combine(today, datetime.min.time())
             ).first()
             
-            # Rate: 1 progress point per minute normally, or 3 if mission is completed
-            passive_rate = 3 if (mission and mission.completed) else 1
-            minutes_passed = amount * 10
-            team.progress = min(100, team.progress + (minutes_passed * passive_rate))
+            # Rate: 10 XP per 10 minutes normally, or 30 XP if mission is completed
+            passive_xp = 30 if (mission and mission.completed) else 10
+            total_passive_xp = amount * passive_xp
+            team.progress += total_passive_xp
+            
+            # Level up logic
+            while team.progress >= 1000:
+                if team.level < 1000:
+                    team.progress -= 1000
+                    team.level += 1
+                else:
+                    team.progress = 1000
+                    break
+            
+            team = check_evolution(team)
             
         # Add exactly the processed time to keep the remainder
         team.last_updated += timedelta(minutes=amount * 10)
@@ -131,6 +141,12 @@ def create_daily_mission(db: Session, team: Team):
 @app.on_event("startup")
 async def startup():
     init_db()
+    # Run data migration automatically for Railway deployment
+    try:
+        import migrate
+        migrate.run_migration()
+    except Exception as e:
+        print("Migration error:", e)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -393,16 +409,15 @@ async def perform_action(action_type: str, db: Session = Depends(get_db), curren
     action = UserAction(user_id=current_user.id, team_id=team.id, action_type=action_type)
     db.add(action)
     
-    # Update team stats (click XP is very low: 1 point)
+    # Update team stats (action XP is 100 points)
     if action_type == "feed":
         team.hunger = min(100, team.hunger + 10)
-        team.progress = min(100, team.progress + 1)
     elif action_type == "play":
         team.mood = min(100, team.mood + 10)
-        team.progress = min(100, team.progress + 1)
     elif action_type == "rest":
         team.energy = min(100, team.energy + 10)
-        team.progress = min(100, team.progress + 1)
+        
+    team.progress += 100
     
     # Update mission progress
     today = datetime.utcnow().date()
@@ -417,7 +432,16 @@ async def perform_action(action_type: str, db: Session = Depends(get_db), curren
         mission.current_count += 1
         if mission.current_count >= mission.target_count:
             mission.completed = True
-            team.progress = min(100, team.progress + 25)  # Large one-time bonus for completing mission
+            team.progress += 500  # Large one-time bonus for completing mission
+            
+    # Check level up
+    while team.progress >= 1000:
+        if team.level < 1000:
+            team.progress -= 1000
+            team.level += 1
+        else:
+            team.progress = 1000
+            break
     
     # Check evolution
     team = check_evolution(team)

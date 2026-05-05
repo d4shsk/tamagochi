@@ -31,7 +31,8 @@ class Team(Base):
     pet_name = Column(String, default="Серунчик")
     pet_stage = Column(SQLEnum(PetStage), default=PetStage.EGG)
     pet_type = Column(String, default="rooster")
-    progress = Column(Integer, default=0)  # 0-100%
+    level = Column(Integer, default=1)
+    progress = Column(Integer, default=0)  # 0-1000 XP
     
     # Mechanics
     last_updated = Column(DateTime, default=datetime.utcnow)

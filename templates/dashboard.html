@@ -183,6 +183,15 @@
         .fill-pink { background: #ff42a5; box-shadow: 0 0 10px #ff42a5; }
         .fill-purple { background: #b142f5; box-shadow: 0 0 10px #b142f5; }
 
+        @keyframes barGlow {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.5) drop-shadow(0 0 10px white); }
+            100% { filter: brightness(1); }
+        }
+        .glow-animation {
+            animation: barGlow 0.5s ease-in-out;
+        }
+
         .actions {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
         }
@@ -394,7 +403,7 @@
             {% if team.is_dead %}
                 <div class="dead-status">☠️ МЕРТВ ☠️</div>
             {% else %}
-                <div class="pet-stage">{{ stage_name }}</div>
+                <div class="pet-stage">{{ stage_name }} (Ур. {{ team.level }})</div>
             {% endif %}
             
             <div class="stats-container">
@@ -403,10 +412,10 @@
                     <div class="stat-info">
                         <div class="stat-header purple">
                             <span>Прогресс</span>
-                            <span>{{ team.progress }}%</span>
+                            <span>{{ (team.progress / 10)|int }}%</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill fill-purple" style="width: {{ team.progress }}%"></div>
+                            <div class="progress-fill fill-purple" style="width: {{ (team.progress / 10)|int }}%"></div>
                         </div>
                     </div>
                 </div>
@@ -610,7 +619,29 @@
                     const newContainer = doc.querySelector('.container');
                     
                     if (currentContainer && newContainer) {
+                        // Save old widths
+                        const oldWidths = Array.from(document.querySelectorAll('.progress-fill')).map(el => el.style.width);
+                        
                         currentContainer.innerHTML = newContainer.innerHTML;
+                        
+                        const newFills = document.querySelectorAll('.progress-fill');
+                        const targetWidths = Array.from(newFills).map(el => el.style.width);
+                        
+                        // Set to old widths temporarily
+                        newFills.forEach((el, i) => {
+                            if(oldWidths[i]) el.style.width = oldWidths[i];
+                        });
+                        
+                        // Force reflow
+                        void document.body.offsetHeight;
+                        
+                        // Set to new widths to trigger CSS transition and add glow
+                        newFills.forEach((el, i) => {
+                            el.style.width = targetWidths[i];
+                            if (oldWidths[i] !== targetWidths[i]) {
+                                el.classList.add('glow-animation');
+                            }
+                        });
                     }
                 }
             } catch (err) {
