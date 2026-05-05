@@ -128,7 +128,8 @@
             0% { transform: scale(1); box-shadow: 0 0 20px rgba(255,66,165,0.2); }
             100% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255,66,165,0.4); }
         }
-        .pet-avatar { font-size: 80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+        .pet-avatar { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .pet-avatar img { max-width: 130px; max-height: 130px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); transition: all 0.3s ease; }
         
         .pet-name { font-size: 2rem; font-weight: 800; margin-bottom: 5px; color: #ffffff; }
         .pet-stage {
@@ -346,7 +347,7 @@
             .action-btn { padding: 10px; flex-direction: row; justify-content: center; gap: 15px; }
             .action-btn span { font-size: 1.2rem; }
             .pet-avatar-wrapper { width: 120px; height: 120px; margin-bottom: 15px; }
-            .pet-avatar { font-size: 60px; }
+            .pet-avatar img { max-width: 100px; max-height: 100px; }
             .pet-name { font-size: 1.6rem; }
         }
     </style>
@@ -367,27 +368,7 @@
             
             <div class="pet-avatar-wrapper">
                 <div class="pet-avatar">
-                    {% if team.pet_stage.value == "egg" %}
-                        🥚
-                    {% elif team.pet_stage.value == "baby" %}
-                        {% if team.pet_type == "rooster" %}🐣
-                        {% elif team.pet_type == "cat" %}🐱
-                        {% elif team.pet_type == "horse" %}🐴
-                        {% elif team.pet_type == "dog" %}🐶
-                        {% else %}🐣{% endif %}
-                    {% elif team.pet_stage.value == "teen" %}
-                        {% if team.pet_type == "rooster" %}🐤
-                        {% elif team.pet_type == "cat" %}🐈
-                        {% elif team.pet_type == "horse" %}🎠
-                        {% elif team.pet_type == "dog" %}🐕
-                        {% else %}🐤{% endif %}
-                    {% else %}
-                        {% if team.pet_type == "rooster" %}🐔
-                        {% elif team.pet_type == "cat" %}🐅
-                        {% elif team.pet_type == "horse" %}🐎
-                        {% elif team.pet_type == "dog" %}🦮
-                        {% else %}🐔{% endif %}
-                    {% endif %}
+                    <img src="/imgs/{{ team.pet_type }}_{{ team.pet_stage.value }}.png" alt="{{ team.pet_type }} {{ team.pet_stage.value }}">
                 </div>
             </div>
             
@@ -575,5 +556,50 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.action-btn');
+            if (!btn || btn.disabled) return;
+
+            const actionUrl = btn.getAttribute('formaction');
+            if (!actionUrl) return;
+
+            e.preventDefault();
+
+            // Disable all action buttons temporarily to prevent spam clicks
+            const allBtns = document.querySelectorAll('.action-btn');
+            allBtns.forEach(b => {
+                b.style.pointerEvents = 'none';
+                b.style.opacity = '0.7';
+                b.style.transform = 'scale(0.98)';
+            });
+
+            try {
+                const response = await fetch(actionUrl, { method: 'POST', redirect: 'follow' });
+                if (response.ok || response.redirected) {
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    const currentContainer = document.querySelector('.container');
+                    const newContainer = doc.querySelector('.container');
+                    
+                    if (currentContainer && newContainer) {
+                        currentContainer.innerHTML = newContainer.innerHTML;
+                    }
+                }
+            } catch (err) {
+                console.error("Action error:", err);
+            } finally {
+                // Restore button states if they weren't replaced
+                document.querySelectorAll('.action-btn').forEach(b => {
+                    b.style.pointerEvents = '';
+                    b.style.opacity = '';
+                    b.style.transform = '';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -61,4 +61,8 @@ htmlcov/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-```
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
