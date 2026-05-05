@@ -12,7 +12,7 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #36393f;
             min-height: 100vh;
             padding: 20px;
         }
@@ -22,21 +22,26 @@
             align-items: center;
             max-width: 1200px;
             margin: 0 auto 20px;
-            color: white;
+            color: #dcddde;
         }
         .header h1 {
             font-size: 2em;
+            color: #ff7eb9;
+            text-shadow: 0 0 10px rgba(255, 126, 185, 0.3);
         }
         .logout-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: #2f3136;
+            color: #dcddde;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: background 0.3s, color 0.3s;
+            border: 1px solid transparent;
         }
         .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: #202225;
+            border-color: #ff7eb9;
+            color: #ff7eb9;
         }
         .container {
             max-width: 1200px;
@@ -46,15 +51,18 @@
             gap: 20px;
         }
         .card {
-            background: white;
-            border-radius: 20px;
+            background: #2f3136;
+            border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
         }
         .card h2 {
-            color: #667eea;
+            color: #ff7eb9;
             margin-bottom: 20px;
-            font-size: 1.5em;
+            font-size: 1.3em;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
         }
         .pet-display {
             text-align: center;
@@ -66,14 +74,14 @@
         }
         .pet-name {
             font-size: 1.8em;
-            color: #333;
+            color: #dcddde;
             margin-bottom: 5px;
         }
         .pet-stage {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff7eb9 0%, #a15eff 100%);
             color: white;
             padding: 8px 20px;
-            border-radius: 20px;
+            border-radius: 4px;
             display: inline-block;
             margin-bottom: 20px;
         }
@@ -84,17 +92,19 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
-            color: #666;
+            color: #b9bbbe;
+            font-size: 12px;
+            text-transform: uppercase;
         }
         .progress-bar {
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 10px;
+            height: 12px;
+            background: #202225;
+            border-radius: 4px;
             overflow: hidden;
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff7eb9 0%, #a15eff 100%);
             transition: width 0.5s;
         }
         .stat-row {
@@ -112,8 +122,10 @@
         }
         .stat-name {
             font-weight: 600;
-            color: #333;
+            color: #b9bbbe;
             margin-bottom: 5px;
+            font-size: 12px;
+            text-transform: uppercase;
         }
         .actions {
             display: grid;
@@ -124,8 +136,8 @@
         .action-btn {
             padding: 20px 10px;
             border: none;
-            border-radius: 15px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -133,19 +145,19 @@
         }
         .action-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .feed-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #ff7eb9 0%, #ff5c8d 100%);
             color: white;
         }
         .play-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #a15eff 0%, #8a4fff 100%);
             color: white;
         }
         .rest-btn {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: white;
+            background: linear-gradient(135deg, #5cff9e 0%, #38f9d7 100%);
+            color: #2f3136;
         }
         .action-icon {
             font-size: 30px;
@@ -159,13 +171,13 @@
             display: flex;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #36393f;
         }
         .member-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff7eb9 0%, #a15eff 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -178,11 +190,11 @@
         }
         .member-name {
             font-weight: 600;
-            color: #333;
+            color: #dcddde;
         }
         .member-role {
             font-size: 12px;
-            color: #666;
+            color: #72767d;
         }
         .invite-form {
             margin-top: 20px;
@@ -192,36 +204,46 @@
         .invite-form input {
             flex: 1;
             padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border: none;
+            border-radius: 4px;
+            background: #202225;
+            color: #dcddde;
             font-size: 14px;
+        }
+        .invite-form input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #ff7eb9;
         }
         .invite-form button {
             padding: 12px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff7eb9 0%, #a15eff 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
         }
+        .invite-form button:hover {
+            box-shadow: 0 4px 15px rgba(255, 126, 185, 0.4);
+        }
         .mission-box {
-            background: #f0f4ff;
+            background: #202225;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
+            border-left: 4px solid #ff7eb9;
         }
         .mission-title {
             font-weight: 600;
-            color: #667eea;
+            color: #dcddde;
             margin-bottom: 10px;
         }
         .mission-progress {
             font-size: 1.2em;
-            color: #333;
+            color: #b9bbbe;
         }
         .mission-complete {
-            color: #43e97b;
+            color: #5cff9e;
             font-weight: bold;
         }
         .activity-list {
@@ -233,26 +255,39 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #36393f;
         }
         .activity-user {
             font-weight: 600;
-            color: #667eea;
+            color: #ff7eb9;
         }
         .activity-action {
-            color: #666;
+            color: #b9bbbe;
         }
         .activity-time {
-            color: #999;
+            color: #72767d;
             font-size: 12px;
         }
         .warning-box {
-            background: #fff3cd;
+            background: #36393f;
             border-left: 4px solid #ffc107;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 4px;
             margin-top: 15px;
-            color: #856404;
+            color: #ffc107;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2f3136;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #202225;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff7eb9;
         }
     </style>
 </head>
