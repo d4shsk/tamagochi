@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SlowDown - Создать питомца</title>
+    <title>Создать питомца - SlowDown</title>
     <style>
         * {
             margin: 0;
@@ -12,29 +12,30 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #36393f;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
         .container {
-            background: white;
+            background: #2f3136;
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
             width: 100%;
             max-width: 500px;
         }
         h1 {
             text-align: center;
-            color: #667eea;
+            color: #ff7eb9;
             margin-bottom: 10px;
             font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(255, 126, 185, 0.3);
         }
         .subtitle {
             text-align: center;
-            color: #666;
+            color: #b9bbbe;
             margin-bottom: 30px;
         }
         .pet-icon {
@@ -43,14 +44,17 @@
             margin-bottom: 20px;
         }
         .info-box {
-            background: #f0f4ff;
+            background: #202225;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 8px;
             margin-bottom: 25px;
+            border-left: 4px solid #ff7eb9;
         }
         .info-box h3 {
-            color: #667eea;
+            color: #ff7eb9;
             margin-bottom: 15px;
+            font-size: 16px;
+            text-transform: uppercase;
         }
         .info-box ul {
             list-style: none;
@@ -58,7 +62,7 @@
         }
         .info-box li {
             padding: 8px 0;
-            color: #555;
+            color: #dcddde;
         }
         .info-box li:before {
             content: "🥚 ";
@@ -66,25 +70,26 @@
         button {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff7eb9 0%, #a15eff 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 4px;
             font-size: 20px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 126, 185, 0.4);
         }
         .warning {
-            background: #fff3cd;
+            background: #36393f;
             border-left: 4px solid #ffc107;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 4px;
             margin-top: 20px;
-            color: #856404;
+            color: #ffc107;
         }
     </style>
 </head>
