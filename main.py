@@ -83,7 +83,7 @@ def apply_time_decay(db: Session, team: Team):
         
     now = datetime.utcnow()
     delta_minutes = (now - team.last_updated).total_seconds() / 60
-    amount = int(delta_minutes)
+    amount = int(delta_minutes / 10)  # 1 point every 10 minutes
     
     if amount > 0:
         # Decay stats
@@ -100,11 +100,13 @@ def apply_time_decay(db: Session, team: Team):
                 Mission.date >= datetime.combine(today, datetime.min.time())
             ).first()
             
-            # Rate: 1 progress point per minute, or 3 if mission is completed
+            # Rate: 1 progress point per minute normally, or 3 if mission is completed
             passive_rate = 3 if (mission and mission.completed) else 1
-            team.progress = min(100, team.progress + (amount * passive_rate))
+            minutes_passed = amount * 10
+            team.progress = min(100, team.progress + (minutes_passed * passive_rate))
             
-        team.last_updated = now
+        # Add exactly the processed time to keep the remainder
+        team.last_updated += timedelta(minutes=amount * 10)
         db.commit()
 
 def create_daily_mission(db: Session, team: Team):

@@ -328,9 +328,26 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,66,165,0.3); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,66,165,0.6); }
 
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         @media (max-width: 992px) {
             .container { grid-template-columns: 1fr; padding: 0 20px; }
             .navbar { padding: 20px; }
+        }
+        
+        @media (max-width: 576px) {
+            .container { padding: 0 10px; }
+            .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+            .card { padding: 20px; }
+            .actions { grid-template-columns: 1fr; gap: 10px; }
+            .action-btn { padding: 10px; flex-direction: row; justify-content: center; gap: 15px; }
+            .action-btn span { font-size: 1.2rem; }
+            .pet-avatar-wrapper { width: 120px; height: 120px; margin-bottom: 15px; }
+            .pet-avatar { font-size: 60px; }
+            .pet-name { font-size: 1.6rem; }
         }
     </style>
 </head>
