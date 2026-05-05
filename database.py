@@ -30,7 +30,13 @@ class Team(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     pet_name = Column(String, default="Серунчик")
     pet_stage = Column(SQLEnum(PetStage), default=PetStage.EGG)
+    pet_type = Column(String, default="rooster")
     progress = Column(Integer, default=0)  # 0-100%
+    
+    # Mechanics
+    last_updated = Column(DateTime, default=datetime.utcnow)
+    resuscitation_count = Column(Integer, default=0)
+    is_dead = Column(Boolean, default=False)
     
     # Pet stats (0-100)
     hunger = Column(Integer, default=50)  # Higher is better (fed)
@@ -49,6 +55,10 @@ class TeamMember(Base):
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
     is_owner = Column(Boolean, default=False)
     joined_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Action points logic
+    action_points = Column(Integer, default=5)
+    last_ap_reset = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", back_populates="teams")
     team = relationship("Team", back_populates="members")
@@ -79,7 +89,7 @@ class UserAction(Base):
     user = relationship("User", back_populates="actions")
     team = relationship("Team", back_populates="actions")
 
-DATABASE_URL = "sqlite:///./slowdown.db"
+DATABASE_URL = "sqlite:///./slowdown3.db"
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать питомца - SERUNCHIK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #03010b;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #03010b 70%);
+        }
+        
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #ff42a5;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 4px;
+            height: 4px;
+            background: #ff42a5;
+            border-radius: 50%;
+            box-shadow: 12px 0 0 #ff42a5;
+        }
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 10px;
+            width: 8px;
+            height: 3px;
+            background: #ff42a5;
+            border-radius: 3px;
+        }
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #ff42a5;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .menu-btn span {
+            display: block;
+            width: 30px;
+            height: 2px;
+            background-color: #ff42a5;
+        }
+
+        /* Main Hero Section */
+        .hero {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 50px;
+            align-items: center;
+            min-height: 60vh;
+        }
+        .hero-content {
+            flex: 1;
+            padding-right: 50px;
+        }
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .hero-title .pink-text {
+            color: #ff42a5;
+            text-shadow: 0 0 20px rgba(255, 66, 165, 0.4);
+            display: block;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #8a8a9d;
+            margin-bottom: 40px;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+        
+        .create-btn-container {
+            margin-bottom: 30px;
+        }
+        .create-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 66, 165, 0.05);
+            border: 2px solid #ff42a5;
+            color: #ff42a5;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 0 20px rgba(255, 66, 165, 0.2), inset 0 0 10px rgba(255, 66, 165, 0.1);
+            transition: all 0.3s ease;
+        }
+        .create-btn:hover {
+            background: rgba(255, 66, 165, 0.15);
+            box-shadow: 0 0 30px rgba(255, 66, 165, 0.4), inset 0 0 15px rgba(255, 66, 165, 0.2);
+            transform: translateY(-2px);
+        }
+        .create-btn .egg-icon {
+            font-size: 1.4rem;
+            filter: drop-shadow(0 0 5px rgba(255, 66, 165, 0.8));
+        }
+
+        .warning-text {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #6b6b7b;
+            font-size: 0.95rem;
+            max-width: 380px;
+            line-height: 1.5;
+        }
+        .warning-icon {
+            color: #ff42a5;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: -2px;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 50px rgba(177, 66, 245, 0.3));
+        }
+
+        /* How it works section */
+        .how-it-works {
+            max-width: 1000px;
+            margin: 80px auto;
+            padding: 40px;
+            background: rgba(16, 12, 26, 0.6);
+            border: 1px solid rgba(255, 66, 165, 0.1);
+            border-radius: 20px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+        .section-header::before, .section-header::after {
+            content: '';
+            height: 1px;
+            width: 100px;
+            background: rgba(255, 66, 165, 0.3);
+        }
+        .section-header::before {
+            margin-right: 20px;
+        }
+        .section-header::after {
+            margin-left: 20px;
+        }
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .feature-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 66, 165, 0.2);
+        }
+
+        .feature-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            font-size: 1.8rem;
+        }
+        .icon-pink { border: 2px solid #ff42a5; color: #ff42a5; box-shadow: inset 0 0 10px rgba(255,66,165,0.2), 0 0 10px rgba(255,66,165,0.2); }
+        .icon-purple { border: 2px solid #b142f5; color: #b142f5; box-shadow: inset 0 0 10px rgba(177,66,245,0.2), 0 0 10px rgba(177,66,245,0.2); }
+        .icon-cyan { border: 2px solid #00f0ff; color: #00f0ff; box-shadow: inset 0 0 10px rgba(0,240,255,0.2), 0 0 10px rgba(0,240,255,0.2); }
+
+        .feature-text {
+            font-size: 1.1rem;
+            color: #c4c4d4;
+            line-height: 1.5;
+        }
+
+        .text-cyan { color: #00f0ff; }
+        .text-yellow { color: #ffeb3b; }
+        .text-pink { color: #ff42a5; }
+
+        .pet-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .pet-option input {
+            display: none;
+        }
+        .pet-card {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #c4c4d4;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .pet-option input:checked + .pet-card {
+            background: rgba(255, 66, 165, 0.2);
+            border-color: #ff42a5;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 66, 165, 0.3);
+        }
+        .pet-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 992px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 0 20px;
+            }
+            .hero-content {
+                padding-right: 0;
+                margin-bottom: 50px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .warning-text {
+                justify-content: center;
+            }
+        }
+        @media (max-width: 600px) {
+            .hero-title { font-size: 3rem; }
+            .feature-item {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo-icon"></div>
+            <div class="logo-text">SERUNCHIK</div>
+        </div>
+        <button class="menu-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <main class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Создание
+                <span class="pink-text">питомца</span>
+            </h1>
+            <p class="hero-subtitle">Давайте начнём выращивать Серунчика!</p>
+            
+            <form action="/create-pet" method="post" class="create-btn-container">
+                <div class="pet-selection">
+                    <h3 style="margin-bottom: 15px; color: #8a8a9d;">Выберите тип питомца:</h3>
+                    <div class="pet-options">
+                        <label class="pet-option">
+                            <input type="radio" name="pet_type" value="rooster" checked>
+                            <span class="pet-card">🐔 Петух</span>
+                        </label>
+                        <label class="pet-option">
+                            <input type="radio" name="pet_type" value="cat">
+                            <span class="pet-card">🐱 Кот</span>
+                        </label>
+                        <label class="pet-option">
+                            <input type="radio" name="pet_type" value="horse">
+                            <span class="pet-card">🐴 Лошадь</span>
+                        </label>
+                        <label class="pet-option">
+                            <input type="radio" name="pet_type" value="dog">
+                            <span class="pet-card">🐶 Собака</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="create-btn" style="margin-top: 20px;">
+                    <span class="egg-icon">🥚</span> Создать Серунчика
+                </button>
+            </form>
+            
+            <div class="warning-text">
+                <div class="warning-icon">⚠</div>
+                <div>Важно: Вам понадобится пригласить хотя бы одного друга, чтобы начать выращивание!</div>
+            </div>
+        </div>
+        
+        <div class="hero-image">
+            <img src="/imgs/bg_pet.png" alt="Incubator with pet">
+        </div>
+    </main>
+
+    <section class="how-it-works">
+        <div class="section-header">
+            <h2>Как это работает:</h2>
+        </div>
+        
+        <div class="features-list">
+            <div class="feature-item">
+                <div class="feature-icon-wrapper icon-pink">
+                    ♡
+                </div>
+                <div class="feature-text">
+                    Серунчик имеет 3 характеристики: 
+                    <span class="text-cyan">Сытость</span>, 
+                    <span class="text-yellow">Энергия</span>, 
+                    <span class="text-pink">Настроение</span>
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon-wrapper icon-purple">
+                    👥
+                </div>
+                <div class="feature-text">
+                    Вы не можете растить его в одиночку – пригласите от <span class="text-pink">1</span> до <span class="text-pink">3</span> друзей
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon-wrapper icon-cyan">
+                    🎮
+                </div>
+                <div class="feature-text">
+                    Кормите, играйте и давайте отдыхать Серунчику
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon-wrapper icon-cyan">
+                    📋
+                </div>
+                <div class="feature-text">
+                    Выполняйте <span class="text-cyan">ежедневные миссии</span> для быстрого роста
+                </div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon-wrapper icon-purple">
+                    📈
+                </div>
+                <div class="feature-text">
+                    Серунчик эволюционирует:<br>
+                    <span style="color:#8a8a9d">Яйцо → Малыш → Подросток → Взрослый</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

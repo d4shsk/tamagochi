@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления - SERUNCHIK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #03010b;
+            color: #ffffff;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #03010b 70%);
+            padding-bottom: 50px;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            max-width: 1400px;
+            margin: 0 auto 30px;
+            border-bottom: 1px solid rgba(255, 66, 165, 0.2);
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #ff42a5;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; width: 4px; height: 4px;
+            background: #ff42a5; border-radius: 50%; box-shadow: 12px 0 0 #ff42a5;
+        }
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 6px; left: 10px; width: 8px; height: 3px;
+            background: #ff42a5; border-radius: 3px;
+        }
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #ff42a5;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .logout-btn {
+            background: rgba(255, 66, 165, 0.1);
+            color: #ff42a5;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid #ff42a5;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: rgba(255, 66, 165, 0.2);
+            box-shadow: 0 0 15px rgba(255, 66, 165, 0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(16, 12, 26, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        .card-header {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-header.pink { color: #ff42a5; }
+        .card-header.cyan { color: #00f0ff; }
+        .card-header.purple { color: #b142f5; }
+
+        /* Pet Display */
+        .pet-display {
+            text-align: center;
+            border-color: rgba(255, 66, 165, 0.2);
+            box-shadow: 0 0 30px rgba(255, 66, 165, 0.05);
+        }
+        .pet-avatar-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,66,165,0.2) 0%, transparent 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 66, 165, 0.5);
+            animation: pulse 4s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255,66,165,0.2); }
+            100% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255,66,165,0.4); }
+        }
+        .pet-avatar { font-size: 80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+        
+        .pet-name { font-size: 2rem; font-weight: 800; margin-bottom: 5px; color: #ffffff; }
+        .pet-stage {
+            display: inline-block;
+            background: rgba(177, 66, 245, 0.2);
+            color: #b142f5;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #b142f5;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .stat-icon {
+            width: 40px; height: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .stat-info { flex: 1; text-align: left; }
+        .stat-header {
+            display: flex; justify-content: space-between;
+            margin-bottom: 8px; font-size: 0.85rem;
+            text-transform: uppercase; font-weight: 600;
+        }
+        .stat-header.cyan { color: #00f0ff; }
+        .stat-header.yellow { color: #ffeb3b; }
+        .stat-header.pink { color: #ff42a5; }
+        .stat-header.purple { color: #b142f5; }
+
+        .progress-bar {
+            height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;
+        }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+        .fill-cyan { background: #00f0ff; box-shadow: 0 0 10px #00f0ff; }
+        .fill-yellow { background: #ffeb3b; box-shadow: 0 0 10px #ffeb3b; }
+        .fill-pink { background: #ff42a5; box-shadow: 0 0 10px #ff42a5; }
+        .fill-purple { background: #b142f5; box-shadow: 0 0 10px #b142f5; }
+
+        .actions {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+        }
+        .action-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ffffff;
+            padding: 15px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit; font-weight: 600; font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .action-btn span { font-size: 1.5rem; }
+        .action-btn:hover:not(:disabled) { transform: translateY(-3px); }
+        .feed-btn:hover:not(:disabled) { border-color: #00f0ff; background: rgba(0,240,255,0.1); box-shadow: 0 0 15px rgba(0,240,255,0.2); }
+        .play-btn:hover:not(:disabled) { border-color: #ff42a5; background: rgba(255,66,165,0.1); box-shadow: 0 0 15px rgba(255,66,165,0.2); }
+        .rest-btn:hover:not(:disabled) { border-color: #ffeb3b; background: rgba(255,235,59,0.1); box-shadow: 0 0 15px rgba(255,235,59,0.2); }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+        
+        .cremate-btn {
+            background: rgba(255, 66, 66, 0.1);
+            border-color: #ff4242;
+            color: #ff4242;
+            width: 100%;
+        }
+        .cremate-btn:hover:not(:disabled) {
+            background: rgba(255, 66, 66, 0.2);
+            box-shadow: 0 0 15px rgba(255, 66, 66, 0.4);
+            border-color: #ff4242;
+        }
+        
+        .resuscitate-btn {
+            background: rgba(66, 255, 100, 0.1);
+            border-color: #42ff64;
+            color: #42ff64;
+            width: 100%;
+        }
+        .resuscitate-btn:hover:not(:disabled) {
+            background: rgba(66, 255, 100, 0.2);
+            box-shadow: 0 0 15px rgba(66, 255, 100, 0.4);
+            border-color: #42ff64;
+        }
+        
+        .dead-status {
+            color: #ff4242;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 66, 66, 0.5);
+        }
+
+        .error-message {
+            background: rgba(255, 66, 66, 0.1);
+            border: 1px solid #ff4242;
+            color: #ff4242;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .ap-badge {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid #00f0ff;
+            color: #00f0ff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        /* Right column sections */
+        .right-column {
+            display: flex; flex-direction: column; gap: 30px;
+        }
+
+        .mission-box {
+            background: rgba(0,240,255,0.05);
+            border: 1px solid rgba(0,240,255,0.2);
+            padding: 20px; border-radius: 15px;
+        }
+        .mission-title { font-weight: 600; color: #ffffff; margin-bottom: 15px; font-size: 1.1rem; }
+        .mission-complete { color: #00f0ff; font-weight: 700; text-shadow: 0 0 10px rgba(0,240,255,0.5); }
+
+        .members-list { list-style: none; display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        .member-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 12px 15px; background: rgba(255,255,255,0.02);
+            border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .member-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(177, 66, 245, 0.2); color: #b142f5; border: 1px solid #b142f5;
+            display: flex; align-items: center; justify-content: center; font-weight: 700;
+        }
+        .member-info { flex: 1; }
+        .member-name { font-weight: 600; color: #ffffff; }
+        .member-role { font-size: 0.8rem; color: #8a8a9d; margin-top: 3px; }
+
+        .invite-form { display: flex; gap: 10px; }
+        .invite-form input {
+            flex: 1; padding: 12px 15px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;
+        }
+        .invite-form input:focus { outline: none; border-color: #b142f5; }
+        .invite-form button {
+            padding: 12px 20px; background: rgba(177, 66, 245, 0.1);
+            color: #b142f5; border: 1px solid #b142f5; border-radius: 8px;
+            font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+        }
+        .invite-form button:hover { background: rgba(177, 66, 245, 0.3); box-shadow: 0 0 15px rgba(177, 66, 245, 0.3); }
+
+        .activity-list {
+            list-style: none; max-height: 250px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 10px; padding-right: 10px;
+        }
+        .activity-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 15px; background: rgba(255,255,255,0.02);
+            border-radius: 10px; border-left: 3px solid #ff42a5;
+        }
+        .activity-user { font-weight: 600; color: #ff42a5; margin-right: 8px; }
+        .activity-action { color: #c4c4d4; font-size: 0.9rem; }
+        .activity-time { color: #6b6b7b; font-size: 0.8rem; }
+
+        .warning-box {
+            background: rgba(255, 235, 59, 0.05); border: 1px solid rgba(255, 235, 59, 0.3);
+            padding: 15px; border-radius: 10px; color: #ffeb3b; margin-top: 15px; font-size: 0.9rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,66,165,0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,66,165,0.6); }
+
+        @media (max-width: 992px) {
+            .container { grid-template-columns: 1fr; padding: 0 20px; }
+            .navbar { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo-icon"></div>
+            <div class="logo-text">SERUNCHIK</div>
+        </div>
+        <a href="/logout" class="logout-btn">Выйти</a>
+    </nav>
+    
+    <div class="container">
+        <!-- Pet Display -->
+        <div class="card pet-display">
+            <h2 class="card-header pink">✨ Ваш питомец</h2>
+            
+            <div class="pet-avatar-wrapper">
+                <div class="pet-avatar">
+                    {% if team.pet_stage.value == "egg" %}
+                        🥚
+                    {% elif team.pet_stage.value == "baby" %}
+                        {% if team.pet_type == "rooster" %}🐣
+                        {% elif team.pet_type == "cat" %}🐱
+                        {% elif team.pet_type == "horse" %}🐴
+                        {% elif team.pet_type == "dog" %}🐶
+                        {% else %}🐣{% endif %}
+                    {% elif team.pet_stage.value == "teen" %}
+                        {% if team.pet_type == "rooster" %}🐤
+                        {% elif team.pet_type == "cat" %}🐈
+                        {% elif team.pet_type == "horse" %}🎠
+                        {% elif team.pet_type == "dog" %}🐕
+                        {% else %}🐤{% endif %}
+                    {% else %}
+                        {% if team.pet_type == "rooster" %}🐔
+                        {% elif team.pet_type == "cat" %}🐅
+                        {% elif team.pet_type == "horse" %}🐎
+                        {% elif team.pet_type == "dog" %}🦮
+                        {% else %}🐔{% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="pet-name">{{ team.pet_name }}</div>
+            {% if team.is_dead %}
+                <div class="dead-status">☠️ МЕРТВ ☠️</div>
+            {% else %}
+                <div class="pet-stage">{{ stage_name }}</div>
+            {% endif %}
+            
+            <div class="stats-container">
+                <div class="stat-row">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <div class="stat-header purple">
+                            <span>Прогресс</span>
+                            <span>{{ team.progress }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill fill-purple" style="width: {{ team.progress }}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-icon">🍖</div>
+                    <div class="stat-info">
+                        <div class="stat-header cyan">
+                            <span>Сытость</span>
+                            <span>{{ team.hunger }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill fill-cyan" style="width: {{ team.hunger }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-row">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-info">
+                        <div class="stat-header yellow">
+                            <span>Энергия</span>
+                            <span>{{ team.energy }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill fill-yellow" style="width: {{ team.energy }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-row">
+                    <div class="stat-icon">😊</div>
+                    <div class="stat-info">
+                        <div class="stat-header pink">
+                            <span>Настроение</span>
+                            <span>{{ team.mood }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill fill-pink" style="width: {{ team.mood }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if error_msg %}
+                <div class="error-message">
+                    {% if error_msg == "no_ap" %}
+                        У вас закончились очки действий на сегодня!
+                    {% elif error_msg == "full_stat" %}
+                        Питомец уже сыт или полон сил! Подождите немного.
+                    {% else %}
+                        Произошла ошибка.
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <form method="post">
+                <div class="actions">
+                    {% if team.is_dead %}
+                        <button type="submit" formaction="/action/cremate" class="action-btn cremate-btn" style="grid-column: span 3;">
+                            <span>🔥</span> КРЕМИРОВАТЬ
+                        </button>
+                    {% elif team.hunger <= 0 %}
+                        <button type="submit" formaction="/action/resuscitate" class="action-btn resuscitate-btn" style="grid-column: span 1;">
+                            <span>💖</span> РЕАНИМИРОВАТЬ
+                        </button>
+                        <button type="submit" formaction="/action/cremate" class="action-btn cremate-btn" style="grid-column: span 2;">
+                            <span>🔥</span> КРЕМИРОВАТЬ
+                        </button>
+                    {% else %}
+                        <button type="submit" formaction="/action/feed" class="action-btn feed-btn" {% if member_count < 2 %}disabled{% endif %}>
+                            <span>🍖</span> Покормить
+                        </button>
+                        <button type="submit" formaction="/action/play" class="action-btn play-btn" {% if member_count < 2 %}disabled{% endif %}>
+                            <span>🎾</span> Поиграть
+                        </button>
+                        <button type="submit" formaction="/action/rest" class="action-btn rest-btn" {% if member_count < 2 %}disabled{% endif %}>
+                            <span>💤</span> Отдых
+                        </button>
+                    {% endif %}
+                </div>
+                
+                {% if not team.is_dead and team.hunger > 0 %}
+                <div style="text-align: center;">
+                    <div class="ap-badge">⚡ Очки действий: {{ action_points }} / 5</div>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+        
+        <div class="right-column">
+            <!-- Mission & Team -->
+            <div class="card">
+                <h2 class="card-header cyan">📋 Ежедневная миссия</h2>
+                <div class="mission-box">
+                    <div class="mission-title">{{ mission.description }}</div>
+                    <div>
+                        {% if mission.completed %}
+                            <span class="mission-complete">✅ Миссия выполнена!</span>
+                            <div style="color: #00f0ff; font-size: 0.85rem; margin-top: 5px;">Пассивный рост ускорен (x3)!</div>
+                        {% else %}
+                            <div class="stat-header cyan" style="margin-bottom: 5px;">
+                                <span>Прогресс миссии</span>
+                                <span>{{ mission.current_count }} / {{ mission.target_count }}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill fill-cyan" style="width: {{ (mission.current_count / mission.target_count * 100)|int }}%"></div>
+                            </div>
+                            <div style="color: #8a8a9d; font-size: 0.85rem; margin-top: 10px;">Награда: +25% опыта и ускорение пассивного роста.</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <h2 class="card-header purple" style="margin-top: 30px;">👥 Команда ({{ member_count }}/4)</h2>
+                <ul class="members-list">
+                    {% for member, user in members %}
+                    <li class="member-item">
+                        <div class="member-avatar">{{ user.username[0]|upper }}</div>
+                        <div class="member-info">
+                            <div class="member-name">{{ user.username }}</div>
+                            <div class="member-role">
+                                {% if member.is_owner %}👑 Владелец{% else %}Участник{% endif %}
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                {% if member_count < 4 %}
+                <form action="/invite" method="post" class="invite-form">
+                    <input type="text" name="code" placeholder="Логин друга" required>
+                    <button type="submit">Пригласить</button>
+                </form>
+                {% else %}
+                <div class="warning-box">
+                    ⚠ Команда полная (максимум 4 человека)
+                </div>
+                {% endif %}
+                
+                {% if member_count < 2 %}
+                <div class="warning-box">
+                    ⚠ Пригласите хотя бы одного друга для начала выращивания!
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Activity Log -->
+            <div class="card">
+                <h2 class="card-header pink">📜 История действий</h2>
+                <ul class="activity-list">
+                    {% for action in actions %}
+                    <li class="activity-item">
+                        <div>
+                            <span class="activity-user">{{ action.username }}</span>
+                            <span class="activity-action">{{ action.action }}</span>
+                        </div>
+                        <span class="activity-time">{{ action.time }}</span>
+                    </li>
+                    {% else %}
+                    <li class="activity-item" style="border-left: none; justify-content: center; color: #8a8a9d;">
+                        Пока нет действий
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

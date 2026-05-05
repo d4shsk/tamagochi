@@ -15,7 +15,7 @@ from database import get_db, init_db, User, Team, TeamMember, Mission, UserActio
 app = FastAPI(title="SlowDown")
 
 templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/imgs", StaticFiles(directory="imgs"), name="imgs")
 
 # Security
 SECRET_KEY = "your-secret-key-change-in-production"
@@ -77,6 +77,36 @@ def check_evolution(team: Team):
         team.progress = 0
     return team
 
+def apply_time_decay(db: Session, team: Team):
+    if team.is_dead:
+        return
+        
+    now = datetime.utcnow()
+    delta_minutes = (now - team.last_updated).total_seconds() / 60
+    amount = int(delta_minutes)
+    
+    if amount > 0:
+        # Decay stats
+        team.hunger = max(0, team.hunger - amount)
+        team.energy = max(0, team.energy - amount)
+        team.mood = max(0, team.mood - amount)
+        
+        # Passive Growth
+        # Only grow if stats are above 0
+        if team.hunger > 0 and team.energy > 0 and team.mood > 0:
+            today = now.date()
+            mission = db.query(Mission).filter(
+                Mission.team_id == team.id,
+                Mission.date >= datetime.combine(today, datetime.min.time())
+            ).first()
+            
+            # Rate: 1 progress point per minute, or 3 if mission is completed
+            passive_rate = 3 if (mission and mission.completed) else 1
+            team.progress = min(100, team.progress + (amount * passive_rate))
+            
+        team.last_updated = now
+        db.commit()
+
 def create_daily_mission(db: Session, team: Team):
     """Create a daily mission for the team"""
     action_types = [
@@ -104,7 +134,12 @@ async def startup():
 async def home(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user:
         return RedirectResponse(url="/dashboard", status_code=302)
-    return templates.TemplateResponse("login.html", {"request": request})
+        
+    error = request.query_params.get("error")
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "error": error
+    })
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
@@ -126,7 +161,7 @@ async def register(username: str = Form(...), password: str = Form(...), db: Ses
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not verify_password(form_data.password, user.password_hash):
-        raise HTTPException(status_code=400, detail="Неверный логин или пароль")
+        return RedirectResponse(url="/?error=1", status_code=302)
     
     access_token = create_access_token(data={"sub": user.username})
     response = RedirectResponse(url="/dashboard", status_code=302)
@@ -147,6 +182,21 @@ async def dashboard(request: Request, db: Session = Depends(get_db), current_use
         })
     
     team = team_member.team
+    
+    # Recharge AP logic (1 per hour)
+    now = datetime.utcnow()
+    if team_member.action_points >= 5:
+        team_member.last_ap_reset = now
+        db.commit()
+    else:
+        hours_passed = int((now - team_member.last_ap_reset).total_seconds() / 3600)
+        if hours_passed > 0:
+            team_member.action_points = min(5, team_member.action_points + hours_passed)
+            team_member.last_ap_reset += timedelta(hours=hours_passed)
+            db.commit()
+    
+    apply_time_decay(db, team)
+    
     members = db.query(TeamMember).filter(TeamMember.team_id == team.id).all()
     member_users = [db.query(User).filter(User.id == m.user_id).first() for m in members]
     
@@ -173,6 +223,8 @@ async def dashboard(request: Request, db: Session = Depends(get_db), current_use
     
     stage_name = get_stage_name(team.pet_stage)
     
+    error_msg = request.query_params.get("error")
+    
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
         "current_user": current_user,
@@ -181,11 +233,13 @@ async def dashboard(request: Request, db: Session = Depends(get_db), current_use
         "members": [(m, u) for m, u in zip(members, member_users)],
         "actions": action_details,
         "mission": mission,
-        "member_count": len(members)
+        "member_count": len(members),
+        "action_points": team_member.action_points,
+        "error_msg": error_msg
     })
 
 @app.post("/create-pet")
-async def create_pet(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def create_pet(pet_type: str = Form("rooster"), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user:
         return RedirectResponse(url="/", status_code=302)
     
@@ -194,7 +248,7 @@ async def create_pet(db: Session = Depends(get_db), current_user: User = Depends
     if existing:
         return RedirectResponse(url="/dashboard", status_code=302)
     
-    team = Team()
+    team = Team(pet_type=pet_type, last_updated=datetime.utcnow())
     db.add(team)
     db.commit()
     db.refresh(team)
@@ -253,20 +307,51 @@ async def perform_action(action_type: str, db: Session = Depends(get_db), curren
     
     team = team_member.team
     
+    if team.is_dead or team.hunger <= 0:
+        return RedirectResponse(url="/dashboard", status_code=302)
+        
+    # Recharge AP logic
+    now = datetime.utcnow()
+    if team_member.action_points >= 5:
+        team_member.last_ap_reset = now
+        db.commit()
+    else:
+        hours_passed = int((now - team_member.last_ap_reset).total_seconds() / 3600)
+        if hours_passed > 0:
+            team_member.action_points = min(5, team_member.action_points + hours_passed)
+            team_member.last_ap_reset += timedelta(hours=hours_passed)
+            db.commit()
+        
+    if team_member.action_points <= 0:
+        return RedirectResponse(url="/dashboard?error=no_ap", status_code=302)
+        
+    # Check stat max limits
+    if action_type == "feed" and team.hunger >= 100:
+        return RedirectResponse(url="/dashboard?error=full_stat", status_code=302)
+    elif action_type == "play" and team.mood >= 100:
+        return RedirectResponse(url="/dashboard?error=full_stat", status_code=302)
+    elif action_type == "rest" and team.energy >= 100:
+        return RedirectResponse(url="/dashboard?error=full_stat", status_code=302)
+        
+    apply_time_decay(db, team)
+    
+    # Deduct AP
+    team_member.action_points -= 1
+    
     # Record action
     action = UserAction(user_id=current_user.id, team_id=team.id, action_type=action_type)
     db.add(action)
     
-    # Update team stats
+    # Update team stats (click XP is very low: 1 point)
     if action_type == "feed":
         team.hunger = min(100, team.hunger + 10)
-        team.progress = min(100, team.progress + 5)
+        team.progress = min(100, team.progress + 1)
     elif action_type == "play":
         team.mood = min(100, team.mood + 10)
-        team.progress = min(100, team.progress + 5)
+        team.progress = min(100, team.progress + 1)
     elif action_type == "rest":
         team.energy = min(100, team.energy + 10)
-        team.progress = min(100, team.progress + 3)
+        team.progress = min(100, team.progress + 1)
     
     # Update mission progress
     today = datetime.utcnow().date()
@@ -281,18 +366,65 @@ async def perform_action(action_type: str, db: Session = Depends(get_db), curren
         mission.current_count += 1
         if mission.current_count >= mission.target_count:
             mission.completed = True
-            team.progress = min(100, team.progress + 10)  # Bonus for completing mission
+            team.progress = min(100, team.progress + 25)  # Large one-time bonus for completing mission
     
     # Check evolution
     team = check_evolution(team)
     
-    # Decay stats slightly over time (simulated)
-    team.hunger = max(0, team.hunger - 1)
-    team.energy = max(0, team.energy - 1)
-    team.mood = max(0, team.mood - 1)
+    # Decay stats slightly over time (simulated) is replaced by actual time decay in apply_time_decay
     
+    team.last_updated = datetime.utcnow()
     db.commit()
     
+    return RedirectResponse(url="/dashboard", status_code=302)
+
+@app.post("/action/cremate")
+async def cremate(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user:
+        return RedirectResponse(url="/", status_code=302)
+    team_member = db.query(TeamMember).filter(TeamMember.user_id == current_user.id).first()
+    if not team_member:
+        return RedirectResponse(url="/dashboard", status_code=302)
+        
+    team = team_member.team
+    
+    db.query(Mission).filter(Mission.team_id == team.id).delete()
+    db.query(UserAction).filter(UserAction.team_id == team.id).delete()
+    db.query(TeamMember).filter(TeamMember.team_id == team.id).delete()
+    db.query(Team).filter(Team.id == team.id).delete()
+    db.commit()
+    
+    return RedirectResponse(url="/dashboard", status_code=302)
+
+@app.post("/action/resuscitate")
+async def resuscitate(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user:
+        return RedirectResponse(url="/", status_code=302)
+    team_member = db.query(TeamMember).filter(TeamMember.user_id == current_user.id).first()
+    if not team_member:
+        return RedirectResponse(url="/dashboard", status_code=302)
+        
+    team = team_member.team
+    
+    if team.is_dead:
+        return RedirectResponse(url="/dashboard", status_code=302)
+        
+    if team.resuscitation_count == 0:
+        success = True
+    else:
+        success = random.choice([True, False])
+        
+    team.resuscitation_count += 1
+    team.last_updated = datetime.utcnow()
+    
+    if success:
+        team.hunger = 50
+        team.energy = 50
+        team.mood = 50
+    else:
+        team.is_dead = True
+        
+    db.commit()
     return RedirectResponse(url="/dashboard", status_code=302)
 
 @app.get("/logout")
