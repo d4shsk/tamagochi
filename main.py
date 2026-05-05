@@ -284,18 +284,67 @@ async def invite(code: str = Form(...), db: Session = Depends(get_db), current_u
     if not invited_user:
         return HTMLResponse(content="<h1>Пользователь не найден</h1><a href='/dashboard'>Назад</a>", status_code=404)
     
-    # Check if already in team
-    existing = db.query(TeamMember).filter(
-        TeamMember.user_id == invited_user.id,
-        TeamMember.team_id == team.id
-    ).first()
-    if existing:
-        return HTMLResponse(content="<h1>Пользователь уже в команде</h1><a href='/dashboard'>Назад</a>", status_code=400)
+    # Check if user already has a team
+    invited_existing = db.query(TeamMember).filter(TeamMember.user_id == invited_user.id).first()
+    if invited_existing:
+        if invited_existing.team_id == team.id:
+            return HTMLResponse(content="<h1>Пользователь уже в вашей команде</h1><a href='/dashboard'>Назад</a>", status_code=400)
+        else:
+            return HTMLResponse(content="<h1>У этого пользователя уже есть питомец. Чтобы присоединиться, ему нужно сначала с ним попрощаться (кремировать).</h1><a href='/dashboard'>Назад</a>", status_code=400)
     
     new_member = TeamMember(user_id=invited_user.id, team_id=team.id)
     db.add(new_member)
     db.commit()
     
+    return RedirectResponse(url="/dashboard", status_code=302)
+
+@app.post("/action/cremate")
+async def cremate(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user:
+        return RedirectResponse(url="/", status_code=302)
+    team_member = db.query(TeamMember).filter(TeamMember.user_id == current_user.id).first()
+    if not team_member:
+        return RedirectResponse(url="/dashboard", status_code=302)
+        
+    team = team_member.team
+    
+    db.query(Mission).filter(Mission.team_id == team.id).delete()
+    db.query(UserAction).filter(UserAction.team_id == team.id).delete()
+    db.query(TeamMember).filter(TeamMember.team_id == team.id).delete()
+    db.query(Team).filter(Team.id == team.id).delete()
+    db.commit()
+    
+    return RedirectResponse(url="/dashboard", status_code=302)
+
+@app.post("/action/resuscitate")
+async def resuscitate(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user:
+        return RedirectResponse(url="/", status_code=302)
+    team_member = db.query(TeamMember).filter(TeamMember.user_id == current_user.id).first()
+    if not team_member:
+        return RedirectResponse(url="/dashboard", status_code=302)
+        
+    team = team_member.team
+    
+    if team.is_dead:
+        return RedirectResponse(url="/dashboard", status_code=302)
+        
+    if team.resuscitation_count == 0:
+        success = True
+    else:
+        success = random.choice([True, False])
+        
+    team.resuscitation_count += 1
+    team.last_updated = datetime.utcnow()
+    
+    if success:
+        team.hunger = 50
+        team.energy = 50
+        team.mood = 50
+    else:
+        team.is_dead = True
+        
+    db.commit()
     return RedirectResponse(url="/dashboard", status_code=302)
 
 @app.post("/action/{action_type}")
@@ -380,54 +429,7 @@ async def perform_action(action_type: str, db: Session = Depends(get_db), curren
     
     return RedirectResponse(url="/dashboard", status_code=302)
 
-@app.post("/action/cremate")
-async def cremate(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if not current_user:
-        return RedirectResponse(url="/", status_code=302)
-    team_member = db.query(TeamMember).filter(TeamMember.user_id == current_user.id).first()
-    if not team_member:
-        return RedirectResponse(url="/dashboard", status_code=302)
-        
-    team = team_member.team
-    
-    db.query(Mission).filter(Mission.team_id == team.id).delete()
-    db.query(UserAction).filter(UserAction.team_id == team.id).delete()
-    db.query(TeamMember).filter(TeamMember.team_id == team.id).delete()
-    db.query(Team).filter(Team.id == team.id).delete()
-    db.commit()
-    
-    return RedirectResponse(url="/dashboard", status_code=302)
 
-@app.post("/action/resuscitate")
-async def resuscitate(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if not current_user:
-        return RedirectResponse(url="/", status_code=302)
-    team_member = db.query(TeamMember).filter(TeamMember.user_id == current_user.id).first()
-    if not team_member:
-        return RedirectResponse(url="/dashboard", status_code=302)
-        
-    team = team_member.team
-    
-    if team.is_dead:
-        return RedirectResponse(url="/dashboard", status_code=302)
-        
-    if team.resuscitation_count == 0:
-        success = True
-    else:
-        success = random.choice([True, False])
-        
-    team.resuscitation_count += 1
-    team.last_updated = datetime.utcnow()
-    
-    if success:
-        team.hunger = 50
-        team.energy = 50
-        team.mood = 50
-    else:
-        team.is_dead = True
-        
-    db.commit()
-    return RedirectResponse(url="/dashboard", status_code=302)
 
 @app.get("/logout")
 async def logout():

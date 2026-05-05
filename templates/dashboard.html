@@ -219,6 +219,24 @@
             box-shadow: 0 0 15px rgba(255, 66, 66, 0.4);
             border-color: #ff4242;
         }
+
+        .danger-btn {
+            background: rgba(255, 66, 66, 0.05);
+            border: 1px solid rgba(255, 66, 66, 0.3);
+            color: #ff4242;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .danger-btn:hover {
+            background: rgba(255, 66, 66, 0.2);
+            box-shadow: 0 0 15px rgba(255, 66, 66, 0.3);
+        }
         
         .resuscitate-btn {
             background: rgba(66, 255, 100, 0.1);
@@ -554,6 +572,12 @@
                     {% endfor %}
                 </ul>
             </div>
+            
+            <form action="/action/cremate" method="post" onsubmit="return confirm('Вы уверены, что хотите кремировать питомца? Это действие необратимо и удалит питомца у всех участников команды.')">
+                <button type="submit" class="danger-btn">
+                    🔥 Кремировать питомца (Удалить команду)
+                </button>
+            </form>
         </div>
     </div>
 
