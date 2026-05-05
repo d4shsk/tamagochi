@@ -89,9 +89,20 @@ class UserAction(Base):
     user = relationship("User", back_populates="actions")
     team = relationship("Team", back_populates="actions")
 
-DATABASE_URL = "sqlite:///./slowdown3.db"
+import os
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./slowdown3.db")
+
+# If using Postgres from Railway, we need to adjust connection args.
+# Postgres doesn't need 'check_same_thread', SQLite does.
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+else:
+    # Handle the postgres:// to postgresql:// deprecation in SQLAlchemy
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    engine = create_engine(DATABASE_URL)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
